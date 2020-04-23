@@ -15,3 +15,28 @@ class ApiProduct(http.Controller):
         result = {}
         result['result'] = product
         return result
+    
+    @route(route=['/api/v1/category/',
+                  '/api/v1/category/<int:category_id>'],
+           methods=['GET'], type='json', auth='public', csrf=False)
+    @token_required()
+    def get_category(self, category_id=False, debug=False, **kwargs):
+        category = request.env['product.category'].with_user(
+            kwargs.get('uid', 1)).api_get_category(category_id=category_id)
+        result = {}
+        result['result'] = category
+        return result
+
+    @route('/api/v1/category',methods=['POST'], type='json', auth='public', csrf=False)
+    @token_required()
+    def post_category(self, **kwargs):
+        body = request.jsonrequest
+        result = request.env['product.category'].api_post_category(body,**kwargs)
+        return {'result': result,'code':201}
+    
+    @route('/api/v1/category/<int:category_id>',methods=['PUT'], type='json', auth='public', csrf=False)
+    @token_required()
+    def edit_category(self, category_id, **kwargs):
+        body = request.jsonrequest
+        result = request.env['product.category'].api_edit_category(category_id, body,**kwargs)
+        return {'result': result,'code':201}
